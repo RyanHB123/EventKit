@@ -1,0 +1,16 @@
+{
+  "name": "eventkit",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build --prefix frontend",
+    "test": "node scripts/test.mjs",
+    "db:setup": "node scripts/database.mjs --seed",
+    "db:migrate": "node scripts/database.mjs",
+    "lint": "npm run lint --prefix frontend"
+  },
+  "dependencies": {
+    "@neon/config": "^1.8.3",
+    "@neon/env": "^1.5.0"
+  }
+}

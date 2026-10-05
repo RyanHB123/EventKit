@@ -1,0 +1,15 @@
+.neon
+.agents/
+.codex/
+.env.local
+node_modules/
+.env
+.env.*
+!.env.example
+.tools/
+**/bin/
+**/obj/
+**/dist/
+**/node_modules/
+.vs/
+artifacts/
