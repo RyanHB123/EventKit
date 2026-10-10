@@ -1,0 +1,17 @@
+.git
+.agents
+.codex
+.neon
+.tools
+artifacts
+.env*
+**/.env*
+node_modules
+**/node_modules
+**/bin
+**/obj
+**/dist
+.vs
+.vscode
+**/appsettings.Development.json
+**/appsettings.*.local.json
