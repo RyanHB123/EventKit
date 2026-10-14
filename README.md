@@ -84,30 +84,6 @@ docker run --detach --rm --name eventkit-local --publish 127.0.0.1:5180:8080 --e
 
 Use the local demo sign-in described above. The container binds to localhost only. Docker receives the database URL at runtime; credentials are excluded from the image. In this Codex session, Docker's install directory had to be added to the process's PATH so the CLI could find its credential helper; no global PATH settings were changed.
 
-## Render deployment
-
-The root `Dockerfile` builds React using Node, publishes the C# API using .NET 10 and serves both on Render's `PORT` (default 10000). The final image runs as a non-root user. `.dockerignore` excludes local credentials, agent configuration and the portable SDK. Runtime secrets are supplied through Render environment variables.
-
-The image sets `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` so secure cookies recognise HTTPS terminated at the hosting proxy, following [Microsoft's proxy configuration guidance](https://learn.microsoft.com/en-gb/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-10.0). This setting trusts forwarded scheme/client headers and assumes a trusted hosting proxy in front of the container. For other hosting environments, configure the specific trusted proxy addresses instead.
-
-Before the first production deployment:
-
-1. Obtain production-branch pooled and direct connection strings, rather than the local development strings.
-2. Set `ASPNETCORE_ENVIRONMENT=Production`, `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `Admin__Email` and a unique `Admin__Password` of at least 12 characters in your migration environment.
-3. Run the API with `--migrate` to apply schema and create the first staff account. Do not use `--seed` for production.
-4. Deploy the Dockerfile from a source repository, or supply a prebuilt image. Render cannot accept a local folder by uploading it through the dashboard. Linking your GitHub account is optional when supplying an image or supported public repository URL.
-5. Configure runtime `DATABASE_URL`, `ASPNETCORE_ENVIRONMENT=Production` and health check path `/api/health`. Use HTTPS: production cookies are secure-only.
-
-The app does not migrate the database automatically at startup. A container restart can sign staff out because cookie encryption keys are ephemeral in this first version. Free Render instances also sleep when idle. Neon remains a separate database provider.
-
-The private GitHub repository is https://github.com/RyanHB123/EventKit. Code is being committed in scheduled groups from 5–10 October 2026, using actual timestamps. The ignored local plan in `artifacts/commit-schedule.json` records the groups and their completion. The complete working application remains available locally throughout. The CI workflow is scheduled for the Docker/deployment commit on 10 October.
-
-The live application is **https://eventkit-u0gh.onrender.com**, deployed on Render's Free plan in Frankfurt using an existing private Docker Hub image. Render has not been connected to GitHub. Its registry credential has read-only image access; the production Neon URL is stored as a secret runtime environment variable.
-
-The verified image is `docker.io/ryanhi16/eventkit:2026-10-05`, with manifest digest `sha256:0775340590380067786b682e7dcbbdb121c6f55b00745b0b2d212d9fa3066677`. The first deployment went live on 5 October 2026. Public HTTPS verification passed for the frontend/assets, health check, protected endpoints, staff sign-in, secure session cookie, production database reads and logout. Production inventory and bookings start empty.
-
-Production sign-in uses the unique password in the ignored local `artifacts/production-login.txt`. Additional deployment credentials are held in `artifacts/deployment-secrets.json`; neither file should be shared or committed. The public deployment metadata is recorded locally in `artifacts/deployment.json`.
-
 ## API
 
 All business endpoints require a staff session. Unsafe requests additionally require `X-CSRF-TOKEN`, obtained from `GET /api/auth/session`.
